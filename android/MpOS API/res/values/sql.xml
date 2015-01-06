@@ -1,0 +1,13 @@
+<resources>
+    
+    <string name="database_name">mpos.data</string>
+    
+    <string name="create_table_netprofile">CREATE TABLE netprofile (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, jitter INTEGER, loss INTEGER, udp TEXT, tcp TEXT, down TEXT, up TEXT, network_type TEXT, endpoint_type TEXT, date DATETIME NOT NULL) </string>
+    <string name="drop_table_netprofile">DROP TABLE IF EXISTS netprofile</string>
+    <string name="name_table_netprofile">netprofile</string>
+    
+    <string name="create_table_user">CREATE TABLE user (id TEXT NOT NULL UNIQUE )</string>
+    <string name="drop_table_user">DROP TABLE IF EXISTS user</string>
+    <string name="name_table_user">user</string>
+    
+</resources>
