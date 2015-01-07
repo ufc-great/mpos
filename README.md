@@ -1,6 +1,6 @@
 # MpOS Framework
 
-Here you will find the source code of MpOS Framework (Android and Windows Phone versions)
+Here you will find the source code and tutorials of MpOS Framework (Android and Windows Phone versions)
 
 ## 1. Demo how to the BenchImage work with MpOS framework.
 
@@ -44,16 +44,18 @@ foto
 
 foto
 
-You’ll see the projects “BenchImage2” and “MpOS API” on eclipse workspace. In BenchImage2 has an MainActivity to start the mobile app. In “assets” folder has many resources among them a “dep” folder with benchimage.jar which was generated from this application and dependencies. This jar's application can be generated in BenchImage2 -> Export -> Jar File. Finally, the MpOS API is a Library Project where you attach your Project to use the MpOS components, this project has been attached on the BenchImage2.
+You’ll see the projects “BenchImage2” and “MpOS API” on eclipse workspace. In BenchImage2 has an MainActivity to start the mobile app. In “assets” folder has many resources among them a “dep” folder with benchimage.jar which was generated from this application and dependencies. 
 
-PS: For test the BenchImage2 app is recommended to run in device using the Android 4.0.x or above, because some services like Discovery service using the multicast and maybe the emulator not support this feature. Execute the BenchImage2 app after the start the MpOS Platform.
+This jar's application can be generated in BenchImage2 -> Export -> Jar File. Finally, the MpOS API is a Library Project where you attach your Project to use the MpOS components, this project has been attached on the BenchImage2.
+
+PS: For test the BenchImage2 app is recommended to run in device using the Android 4.0.x or above, because some services like Discovery service using the multicast and maybe the emulator not support this feature. Be sure to check if your WiFi network has support multicast.
 
 
 ### 1.2. Import the Windows Phone components to Visual Studio 2013
 
 1. On cloned Project was a folder called “Windows phone” and click on “MpOS.sln” for open project on VS 2013.
 
-PS: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. Be sure to check if your WiFi network has support multicast. Execute the BenchImage2 app after the start the MpOS Platform.
+PS: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. Be sure to check if your WiFi network has support multicast.
 
 
 ### 1.3. Execute the MpOS Plataform on Prompt
