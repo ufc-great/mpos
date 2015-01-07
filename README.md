@@ -22,27 +22,27 @@ Technologies used:
 
 1. Import -> Git -> Projects from Git
 
-<foto>
+foto
 
 2. Click in “Local” and “Add” a repository
 
-<foto>
+foto
 
 3. Selected the path where Project was cloned and clicked in Finish
 
-<foto>
+foto
 
 4. Selected the repository cloned and click “next”
 
-<foto>
+foto
 
 5. Choose “Import existing projects” and click “Next”
 
-<foto>
+foto
 
 6. Selected the “BenchImage2” and “MpOS API” to import and click in “Finish”
 
-<foto>
+foto
 
 You’ll see the projects “BenchImage2” and “MpOS API” on eclipse workspace. In BenchImage2 has an MainActivity to start the mobile app. In “assets” folder has many resources among them a “dep” folder with benchimage.jar which was generated from this application and dependencies. This jar's application can be generated in BenchImage2 -> Export -> Jar File. Finally, the MpOS API is a Library Project where you attach your Project to use the MpOS components, this project has been attached on the BenchImage2.
 
