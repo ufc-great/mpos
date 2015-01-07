@@ -51,7 +51,7 @@ PS: For test the BenchImage2 app is recommended to run in device using the Andro
 PS2: Be sure to check if your WiFi network has support multicast.
 
 
-### Import Windows Phone components to Visual Studio 2013
+#### Import Windows Phone components to Visual Studio 2013
 
 In cloned directory has a folder called "windows_phone" and click on “MpOS.sln” for open project on VS 2013.
 
@@ -60,7 +60,7 @@ PS: For test the BenchImage2 app is recommended to run in device using the Windo
 PS2: Be sure to check if your WiFi network has support multicast.
 
 
-### Execute the MpOS Plataform on Prompt
+#### Execute the MpOS Plataform on Prompt
 
 1. You need to navigated to cloned directory -> folder "plataform" -> folder "executables"
 
@@ -75,7 +75,7 @@ PS: To kill the application on Prompt is using the “Ctrl+C”.
 PS2: You should to check the firewall permissions or disable it. 
 
 
-### Execute the BenchImage app
+#### Execute the BenchImage app
 
 Execute BenchImage on Android using the Eclipse ADT and on Windows Phone using the VS 2013. On MpOS Plataform CLI you’ll see the multicast and deploy service working. When you load the app, selected on: 
 
