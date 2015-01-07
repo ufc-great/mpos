@@ -78,3 +78,7 @@ PS: Didn’t forget to permit or disable the firewall application. To kill the a
 2. Press “Inicia” to starting the offloading application and as resulting you’ll see the figure with cartoonizer filter.
 
 PS: On system monitor maybe you’ll see the high network activity and fast app executing when compared with “Local” executing on “Processamento”.
+
+License
+-------
+[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
