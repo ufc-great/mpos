@@ -36,14 +36,14 @@ public final class MposMain {
     static {
         System.setProperty("java.net.preferIPv4Stack", "true");
         PropertyConfigurator.configure(MposMain.class.getResourceAsStream("/br/ufc/mdcc/mpos/util/log4j.properties"));
+        logger = Logger.getLogger(MposMain.class);
     }
+    
+    private static Logger logger = null;
 
-    private MposMain() {
-
-    }
+    private MposMain() {}
 
     public static void main(String... args) {
-        Logger logger = Logger.getLogger(MposMain.class);
         try {
             ServiceController.getInstance().start();
             System.out.println("MpOS Platform for Android was started!");
@@ -76,8 +76,8 @@ public final class MposMain {
                     while ((line = bufferedReader.readLine()) != null) {
                         System.out.println(line);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    logger.error("Check the MpOS Plataform on system monitor and kill this application or you didn't executed on OS Microsoft Windows", e);
                 }
             }
         }.start();
