@@ -20,27 +20,27 @@ Technologies used:
 
 ### 1.1. Import the Android components on Eclipse ADT
 
-1. Import -> Git -> Projects from Git
+* Import -> Git -> Projects from Git
 
 foto
 
-2. Click in “Local” and “Add” a repository
+* Click in “Local” and “Add” a repository
 
 foto
 
-3. Selected the path where Project was cloned and clicked in Finish
+* Selected the path where Project was cloned and clicked in Finish
 
 foto
 
-4. Selected the repository cloned and click “next”
+* Selected the repository cloned and click “next”
 
 foto
 
-5. Choose “Import existing projects” and click “Next”
+* Choose “Import existing projects” and click “Next”
 
 foto
 
-6. Selected the “BenchImage2” and “MpOS API” to import and click in “Finish”
+* Selected the “BenchImage2” and “MpOS API” to import and click in “Finish”
 
 foto
 
