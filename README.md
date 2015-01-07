@@ -1,4 +1,6 @@
-# 1. Demo how to the BenchImage work with MpOS framework.
+# MpOS Framework Tutorials
+
+## 1. Demo how to the BenchImage work with MpOS framework.
 
 Technologies used:
 
@@ -14,7 +16,7 @@ Technologies used:
   3. Windows Phone emulators (need Win 8.1 x64 Pro with client Hyper-V installed)
 
 
-## 1.1. Import the Android components on Eclipse ADT
+### 1.1. Import the Android components on Eclipse ADT
 
 1. Import -> Git -> Projects from Git
 
@@ -45,14 +47,14 @@ You’ll see the projects “BenchImage2” and “MpOS API” on eclipse worksp
 PS: For test the BenchImage2 app is recommended to run in device using the Android 4.0.x or above, because some services like Discovery service using the multicast and maybe the emulator not support this feature. Execute the BenchImage2 app after the start the MpOS Platform.
 
 
-## 1.2. Import the Windows Phone components to Visual Studio 2013
+### 1.2. Import the Windows Phone components to Visual Studio 2013
 
 1. On cloned Project was a folder called “Windows phone” and click on “MpOS.sln” for open project on VS 2013.
 
 PS: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. Be sure to check if your WiFi network has support multicast. Execute the BenchImage2 app after the start the MpOS Platform.
 
 
-## 1.3. Execute the MpOS Plataform on Prompt
+### 1.3. Execute the MpOS Plataform on Prompt
 
 1. You need to navigated to cloned Project -> plataform -> executables
 
@@ -61,7 +63,7 @@ PS: For test the BenchImage2 app is recommended to run in device using the Windo
 PS: Didn’t forget to permit or disable the firewall application. To kill the application on Prompt is using the “Ctrl+C”.
 
 
-## 1.4. Execute the BenchImage app
+### 1.4. Execute the BenchImage app
 
 1. Execute BenchImage on Android using the Eclipse ADT and on Windows Phone using the VS 2013. On MpOS Plataform CLI you’ll see the multicast and deploy service working. When you load the app, selected on: 
 
