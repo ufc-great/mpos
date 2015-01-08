@@ -54,11 +54,13 @@ Note: For test the BenchImage2 app is recommended to run in device using the Win
 Note2: Be sure to check if your WiFi network has support multicast.
 
 
-#### Execute the MpOS Plataform on Prompt
+#### Execute the MpOS Plataform
 
-1. You need to navigated to cloned directory -> folder "plataform" -> folder "executables"
+1. You need to navigated to cloned directory -> folder "plataform" -> folder "executables" and set the machine IP in config.properties (cloudlet.interface.ip)
 
-2. Execute this command
+2. Open Prompt (or console) and navigate to cloned directory -> folder "plataform" -> folder "executables"
+
+3. Execute this command
 
 ```
 java -jar mpos_plataform.jar
