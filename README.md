@@ -57,7 +57,7 @@ Note2: Be sure to check if your WiFi network has support multicast.
 
 #### Execute the MpOS Plataform
 
-1. You need navigated to:
+* You need navigated to:
 
 ```
 cloned directory -> folder "plataform" -> folder "executables"
@@ -66,13 +66,13 @@ cloned directory -> folder "plataform" -> folder "executables"
 set the machine IP in config.properties (cloudlet.interface.ip)
 ```
 
-2. Open Prompt (or console) and navigate to: 
+* Open Prompt (or console) and navigate to: 
 
 ```
 cloned directory -> folder "plataform" -> folder "executables"
 ```
 
-3. Execute this command:
+* Execute this command:
 
 ```
 java -jar mpos_plataform.jar
