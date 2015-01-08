@@ -26,19 +26,10 @@ In this tutorial you'll see how to run BenchImage app with MpOS
 Open Eclipse ADT and follow this steps (jump to next section if you know how to import in eclipse)
 
 ```
-Import -> Git -> Projects from Git
+Import -> Android -> Existing Android Code Into Workspace
 ```
 ```
-Click in “Local” and “Add” a repository
-```
-```
-Selected the path where Project was cloned '<cloned_path>/android' and click in "finish"
-```
-```
-Selected the repository cloned and click “next”
-```
-```
-Choose “Import existing projects” and click “Next”
+Browser the path where Project was cloned '<cloned_path>/android' and click in "OK"
 ```
 ```
 Selected the “BenchImage2” and “MpOS API” to import and click in “Finish”
