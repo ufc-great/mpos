@@ -46,7 +46,7 @@ Selected the “BenchImage2” and “MpOS API” to import and click in “Fini
 
 You’ll see the projects “BenchImage2” and “MpOS API” on eclipse workspace. In BenchImage2 has an MainActivity to start the mobile app. 
 
-PS: For test the BenchImage2 app is recommended to run in device using the Android 4.0.x or above, because some services like Discovery service using the multicast and maybe the emulator not support this feature. 
+Note: For test the BenchImage2 app is recommended to run in device using the Android 4.0.x or above, because some services like Discovery service using the multicast and maybe the emulator not support this feature. 
 
 PS2: Be sure to check if your WiFi network has support multicast.
 
@@ -55,7 +55,7 @@ PS2: Be sure to check if your WiFi network has support multicast.
 
 In cloned directory has a folder called "windows_phone" and click on “MpOS.sln” for open project on VS 2013.
 
-PS: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. 
+Note: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. 
 
 PS2: Be sure to check if your WiFi network has support multicast.
 
@@ -70,7 +70,7 @@ PS2: Be sure to check if your WiFi network has support multicast.
 java -jar mpos_plataform.jar
 ```
 
-PS: To kill the application on Prompt is using the “Ctrl+C”.
+Note: To kill the application on Prompt is using the “Ctrl+C”.
 
 PS2: You should to check the firewall permissions or disable it. 
 
@@ -88,7 +88,7 @@ Execute BenchImage on Android using the Eclipse ADT and on Windows Phone using t
 
 Press “Inicia” to starting the offloading application and as resulting you’ll see the figure with cartoonizer filter.
 
-PS: On system monitor maybe you’ll see the high network activity and fast app executing when compared with “Local” executing on “Processamento”.
+Note: On system monitor maybe you’ll see the high network activity and fast app executing when compared with “Local” executing on “Processamento”.
 
 
 
