@@ -35,7 +35,8 @@ Browser the path where Project was cloned '<cloned_path>/android' and click in "
 Selected the “BenchImage2” and “MpOS API” to import and click in “Finish”
 ```
 ```
-In each project “BenchImage2” and “MpOS API” go in Properties -> Android -> Selected "Target Name: Android 4.x" and click in "OK"
+In each project “BenchImage2” and “MpOS API” go in Properties -> Android -> Selected 
+"Target Name: Android 4.x" and click in "OK"
 ```
 
 You’ll see the projects “BenchImage2” and “MpOS API” on eclipse workspace. In BenchImage2 has an MainActivity to start the mobile app. 
@@ -56,11 +57,22 @@ Note2: Be sure to check if your WiFi network has support multicast.
 
 #### Execute the MpOS Plataform
 
-1. You need to navigated to cloned directory -> folder "plataform" -> folder "executables" and set the machine IP in config.properties (cloudlet.interface.ip)
+1. You need navigated to:
 
-2. Open Prompt (or console) and navigate to cloned directory -> folder "plataform" -> folder "executables"
+```
+cloned directory -> folder "plataform" -> folder "executables"
+```
+```
+set the machine IP in config.properties (cloudlet.interface.ip)
+```
 
-3. Execute this command
+2. Open Prompt (or console) and navigate to: 
+
+```
+cloned directory -> folder "plataform" -> folder "executables"
+```
+
+3. Execute this command:
 
 ```
 java -jar mpos_plataform.jar
