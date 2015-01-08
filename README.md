@@ -34,12 +34,15 @@ Browser the path where Project was cloned '<cloned_path>/android' and click in "
 ```
 Selected the “BenchImage2” and “MpOS API” to import and click in “Finish”
 ```
+```
+In each project “BenchImage2” and “MpOS API” go in Properties -> Android -> Selected "Target Name: Android 4.x" and click in "OK"
+```
 
 You’ll see the projects “BenchImage2” and “MpOS API” on eclipse workspace. In BenchImage2 has an MainActivity to start the mobile app. 
 
 Note: For test the BenchImage2 app is recommended to run in device using the Android 4.0.x or above, because some services like Discovery service using the multicast and maybe the emulator not support this feature. 
 
-PS2: Be sure to check if your WiFi network has support multicast.
+Note2: Be sure to check if your WiFi network has support multicast.
 
 
 #### Import Windows Phone components to Visual Studio 2013
@@ -48,7 +51,7 @@ In cloned directory has a folder called "windows_phone" and click on “MpOS.sln
 
 Note: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. 
 
-PS2: Be sure to check if your WiFi network has support multicast.
+Note2: Be sure to check if your WiFi network has support multicast.
 
 
 #### Execute the MpOS Plataform on Prompt
@@ -63,7 +66,7 @@ java -jar mpos_plataform.jar
 
 Note: To kill the application on Prompt is using the “Ctrl+C”.
 
-PS2: You should to check the firewall permissions or disable it. 
+Note2: You should to check the firewall permissions or disable it. 
 
 
 #### Execute the BenchImage app
