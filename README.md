@@ -46,11 +46,11 @@ Note:  In order to test the ‘BenchImage’ application, it is recommended to u
 
 #### Import Windows Phone components to Visual Studio 2013
 
-Browse the path where the project is located.
+* Browse the path where the project is located.
 
-Enter in the “windows_phone” folder.
+* Enter in the “windows_phone” folder.
 
-Click on “MpOS.sln” in order to open the project on VS 2013.
+* Click on “MpOS.sln” in order to open the project on VS 2013.
 
 Note: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. 
 
