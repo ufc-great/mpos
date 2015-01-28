@@ -1,7 +1,7 @@
 [MpOS Framework] (http://mpos.great.ufc.br)
 ====================================================================
 
-Here you will find the source code and tutorials of MpOS Framework (Android and Windows Phone)
+Here you will find the source code and starter guide of MpOS Framework (Android and Windows Phone)
 
 ## Developers
 
@@ -23,16 +23,16 @@ In this tutorial you'll see how to run BenchImage app with MpOS
 
 #### Import Android components on Eclipse ADT
 
-Open Eclipse ADT and follow this steps (jump to next section if you know how to import in eclipse)
+Open Eclipse ADT and follow this steps (jump to next section if you know how to import in Eclipse)
 
 ```
 Import -> Android -> Existing Android Code Into Workspace
 ```
 ```
-Browser the path where Project was cloned '<cloned_path>/android' and click in "OK"
+Browser the path where the Project was cloned '<cloned_path>/android' and click in "OK" button
 ```
 ```
-Selected the “BenchImage2” and “MpOS API” to import and click in “Finish”
+Selected the “BenchImage2” and “MpOS API” projects to import and click in “Finish”
 ```
 ```
 In each project “BenchImage2” and “MpOS API” go in Properties -> Android -> Selected 
