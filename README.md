@@ -1,7 +1,7 @@
 [MpOS Framework] (http://mpos.great.ufc.br)
 ====================================================================
 
-Here you will find the source code and starter guide of MpOS Framework (Android and Windows Phone)
+This guide will provide you all the steps to download, import and run the BenchImage application, which can be used to demonstrate MpOS functionalities for both Android and Windows Phone platforms.
 
 ## Developers
 
@@ -23,54 +23,50 @@ In this tutorial you'll see how to run BenchImage app with MpOS
 
 #### Import Android components on Eclipse ADT
 
-Open Eclipse ADT and follow this steps (jump to next section if you know how to import in Eclipse)
+Open Eclipse ADT and follow this steps (jump to next section if you know how to import in eclipse)
 
 ```
 Import -> Android -> Existing Android Code Into Workspace
 ```
 ```
-Browser the path where the Project was cloned '<cloned_path>/android' and click in "OK" button
+Browser the path where Project was cloned '<cloned_path>/android' and click on "OK" button
 ```
 ```
-Selected the “BenchImage2” and “MpOS API” projects to import and click in “Finish”
+Selected the “BenchImage2” and “MpOS API” to import and click on “Finish” button
 ```
 ```
 In each project “BenchImage2” and “MpOS API” go in Properties -> Android -> Selected 
-"Target Name: Android 4.x" and click in "OK"
+"Target Name: Android 4.x" and click on "OK" button
 ```
 
 You’ll see the projects “BenchImage2” and “MpOS API” on eclipse workspace. In BenchImage2 has an MainActivity to start the mobile app. 
 
-Note: For test the BenchImage2 app is recommended to run in device using the Android 4.0.x or above, because some services like Discovery service using the multicast and maybe the emulator not support this feature. 
-
-Note2: Be sure to check if your WiFi network has support multicast.
+Note:  In order to test the ‘BenchImage’ application, it is recommended to use a device with Android 4.0.X or above, because of the multicast-based discovery system. Emulator is not recommend either. 
 
 
 #### Import Windows Phone components to Visual Studio 2013
 
-In cloned directory has a folder called "windows_phone" and click on “MpOS.sln” for open project on VS 2013.
+* Browse the path where the project is located.
+
+* Enter in the “windows_phone” folder.
+
+* Click on “MpOS.sln” in order to open the project on VS 2013.
 
 Note: For test the BenchImage2 app is recommended to run in device using the Windows Phone 8.x or above. 
-
-Note2: Be sure to check if your WiFi network has support multicast.
 
 
 #### Execute the MpOS Plataform
 
-* You need navigated to:
+* Browse the path where the project is located:
 
 ```
 cloned directory -> folder "plataform" -> folder "executables"
 ```
 ```
-set the machine IP in config.properties (cloudlet.interface.ip)
+configure the machine IP in config.properties "cloudlet.interface.ip"
 ```
 
-* Open Prompt (or console) and navigate to: 
-
-```
-cloned directory -> folder "plataform" -> folder "executables"
-```
+* Open Prompt (or console) and navigate again to “executables” folder 
 
 * Execute this command:
 
@@ -80,12 +76,12 @@ java -jar mpos_plataform.jar
 
 Note: To kill the application on Prompt is using the “Ctrl+C”.
 
-Note2: You should to check the firewall permissions or disable it. 
+Note2: You should check the firewall permissions to allow mpos_plataform.jar to run properly. And also if the wireless access point supports multicast protocol. 
 
 
 #### Execute the BenchImage app
 
-Execute BenchImage on Android using the Eclipse ADT and on Windows Phone using the VS 2013. On MpOS Plataform CLI you’ll see the multicast and deploy service working. When you load the app, selected on: 
+Execute BenchImage on Android using the Eclipse ADT and on Windows Phone using the VS 2013. When you load the mobile app, selected on: 
 
 ```
 “Filtro” -> Original to Cartoonized;
@@ -97,6 +93,8 @@ Execute BenchImage on Android using the Eclipse ADT and on Windows Phone using t
 Press “Inicia” to starting the offloading application and as resulting you’ll see the figure with cartoonizer filter.
 
 Note: On system monitor maybe you’ll see the high network activity and fast app executing when compared with “Local” executing on “Processamento”.
+
+Note: On MpOS Plataform CLI, you’ll be able to see the multicast and deployment services working. And you’ll also able to see a high network activity when the offloading system is working. Depending on the mobile device, execution environment and network conditions, the filter should be executed faster outside of the mobile device (Cloudlet or Internet).
 
 
 
