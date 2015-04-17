@@ -86,7 +86,7 @@ public final class RpcTcpServer extends TcpServerPool{
                 call.debug.setExecutionCpuTime(System.currentTimeMillis() - initCpuTime);
             }
 
-            sent(output, closeable, objReturn, call);
+            send(output, closeable, objReturn, call);
         } catch (Exception e) {
             if (call != null) {
                 logger.info("Method call: " + call.methodName + ", from object: " + call.objLocal.getClass().getName() + " failed!", e);
@@ -227,7 +227,7 @@ public final class RpcTcpServer extends TcpServerPool{
         closeable.dos = dos;
     }
 
-    private void sent(OutputStream os, CloseableStream closeable, Object objReturn, CallRemotable call) throws IOException {
+    private void send(OutputStream os, CloseableStream closeable, Object objReturn, CallRemotable call) throws IOException {
         byte dataFlag[] = new byte[1];
 
         if (call.manualSerialization) {

@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 public @interface MposConfig {
 	ProfileNetwork profile() default ProfileNetwork.LIGHT;
 
-	String endpointSecondary() default "";
+	String secondaryEndpoint() default "";
 
 	boolean deviceDetails() default true;
 
