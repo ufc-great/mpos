@@ -133,7 +133,7 @@ How to Cite
 -------
 If you are using the MpOS Framework for your research, please do not forget to cite. Thanks!
 
-Philipp B. Costa, Paulo A. L. Rego, Lincoln S. Rocha, Fernando A. M. Trinta, and José N. de Souza. 2015. MpOS: a multiplatform offloading system. In Proceedings of the 30th Annual ACM Symposium on Applied Computing (SAC '15). ACM, New York, NY, USA, 577-584.
+* Philipp B. Costa, Paulo A. L. Rego, Lincoln S. Rocha, Fernando A. M. Trinta, and José N. de Souza. 2015. MpOS: a multiplatform offloading system. In Proceedings of the 30th Annual ACM Symposium on Applied Computing (SAC '15). ACM, New York, NY, USA, 577-584.
 
 The Bibtex format is:
 
