@@ -126,3 +126,31 @@ Copyright (C) 2014 Philipp B. Costa
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+
+
+How to Cite
+-------
+If you are using the MpOS Framework for your research, please do not forget to cite. Thanks!
+
+Philipp B. Costa, Paulo A. L. Rego, Lincoln S. Rocha, Fernando A. M. Trinta, and José N. de Souza. 2015. MpOS: a multiplatform offloading system. In Proceedings of the 30th Annual ACM Symposium on Applied Computing (SAC '15). ACM, New York, NY, USA, 577-584.
+
+The Bibtex format is:
+
+@inproceedings{Costa:2015:MMO:2695664.2695945,
+ author = {Costa, Philipp B. and Rego, Paulo A. L. and Rocha, Lincoln S. and Trinta, Fernando A. M. and de Souza, Jos{\'e} N.},
+ title = {MpOS: A Multiplatform Offloading System},
+ booktitle = {Proceedings of the 30th Annual ACM Symposium on Applied Computing},
+ series = {SAC '15},
+ year = {2015},
+ isbn = {978-1-4503-3196-8},
+ location = {Salamanca, Spain},
+ pages = {577--584},
+ numpages = {8},
+ url = {http://doi.acm.org/10.1145/2695664.2695945},
+ doi = {10.1145/2695664.2695945},
+ acmid = {2695945},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {mobile cloud computing, multiple platforms, offloading},
+} 
