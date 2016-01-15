@@ -47,7 +47,7 @@ public final class ClientTcp extends ClientAbstract {
 	@Override
 	public void connect(String ip, int port) throws IOException, MissedEventException {
 		socket = new Socket(ip, port);
-		socket.setSoTimeout(20000);
+		socket.setSoTimeout(Integer.MAX_VALUE);
 
 		if (threadControl) {
 			if (event == null) {
