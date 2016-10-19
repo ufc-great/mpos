@@ -140,7 +140,7 @@ public final class MposFramework {
                     deviceController.collectLocation();
                 }
 
-                String endpointSecondary = app.endpointSecondary();
+                String endpointSecondary = app.secondaryEndpoint();
                 if (endpointSecondary.equals("")) {
                     endpointSecondary = null;
                 }
