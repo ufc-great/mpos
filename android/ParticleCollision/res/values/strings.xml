@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Particle Collision</string>
+    <string name="main_activity_name">Collision</string>
+    <string name="action_settings">Configuração</string>
+    <string name="action_start">Inicia</string>
+    <string name="action_stop">Parar</string>
+
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancelar</string>
+    <string name="alert_exit_title">Sair</string>
+    <string name="alert_exit_message">Encerrar aplicação?</string>
+    
+</resources>

@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <ListPreference
+            android:title="@string/pref_ball_quantity_title"
+            android:summary="@string/pref_ball_quantity_summary"
+            android:key="@string/pref_ball_quantity_key"
+            android:defaultValue="@string/pref_ball_quantity_default_value"
+            android:entries="@array/pref_ball_quantity_string"
+            android:entryValues="@array/pref_ball_quantity_values" />
+    
+    <CheckBoxPreference
+            android:title="@string/pref_start_place_title"
+            android:defaultValue="true"
+            android:key="@string/pref_start_place_key" 
+            android:summaryOn="@string/pref_start_place_on" 
+            android:summaryOff="@string/pref_start_place_off"/>
+    
+    <ListPreference
+            android:title="@string/pref_mpos_title"
+            android:summary="@string/pref_mpos_summary"
+            android:key="@string/pref_mpos_key"
+            android:defaultValue="@string/pref_mpos_default_value"
+            android:entries="@array/pref_mpos_execution_string"
+            android:entryValues="@array/pref_mpos_execution_values" />
+    
+    <CheckBoxPreference
+            android:title="@string/pref_mpos_serial_title"
+            android:defaultValue="true"
+            android:key="@string/pref_mpos_serial_key" 
+            android:summaryOn="@string/pref_mpos_serial_on" 
+            android:summaryOff="@string/pref_mpos_serial_off"/>
+</PreferenceScreen>

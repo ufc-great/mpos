@@ -1,0 +1,790 @@
+<#@ template language="C#" hostspecific="true" debug="true" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="EnvDTE" #>
+<#@ assembly name="System" #>
+<#@ assembly name="System.Core" #>
+
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+
+using System;
+using Ufc.MpOS.Proxy;
+using System.Reflection;
+using System.Collections.Generic;
+
+	<#
+		//processing lists
+		List<string> proxyList = new List<string>();
+		List<string> interfaceList = new List<string>();
+		List<string> methodNameList = new List<string>();
+
+		List<string> outputList = new List<string>();
+
+		try{
+
+		//set projectRoot
+		string projectRoot = Path.Combine(Host.ResolvePath(string.Empty), @"..\");
+		string[] allSourcePaths = Directory.GetFiles(projectRoot, "*.cs", SearchOption.AllDirectories);
+		string[] ignoreSourcePaths = Directory.GetFiles(projectRoot, "*.*.cs", SearchOption.AllDirectories);
+
+		//get project name
+		string[] splitPaths = projectRoot.Split(new char[]{'\\'});
+		string projectName = splitPaths[splitPaths.Length-4];
+
+		//loading project assembly
+		string originalAssemblyPath = Path.Combine(Host.ResolvePath(string.Empty), @"..\Bin\Debug\"+projectName+".dll");
+		string originalAssemblyMposPath = Path.Combine(Host.ResolvePath(string.Empty), @"..\Bin\Debug\MpOS_API.dll");
+		string t4LoadingAssemblyPath = Path.Combine(Host.ResolvePath(string.Empty), @"DLL\project_"+Stopwatch.GetTimestamp()+".dll");
+		string t4LoadingAssemblyMposPath = Path.Combine(Host.ResolvePath(string.Empty), @"DLL\mpos_"+Stopwatch.GetTimestamp()+".dll");
+
+		string depDll = Path.Combine(Host.ResolvePath(string.Empty), @"Dep\"+projectName+".dll");
+		string depMpos = Path.Combine(Host.ResolvePath(string.Empty), @"Dep\MpOS_API.dll");
+
+		File.Copy(originalAssemblyMposPath, depMpos, true);
+		File.Copy(originalAssemblyPath, depDll, true);
+
+		File.Copy(originalAssemblyMposPath, t4LoadingAssemblyMposPath, true);
+		File.Copy(originalAssemblyPath, t4LoadingAssemblyPath, true);
+
+		var sourceAssembly = Assembly.LoadFrom(t4LoadingAssemblyPath);
+		var mposAssembly = Assembly.LoadFrom(t4LoadingAssemblyMposPath);
+
+		//using imports
+		List<string> usingList = new List<string>();
+		usingList.Add("using System;");
+		usingList.Add("using Ufc.MpOS.Proxy;");
+		usingList.Add("using System.Reflection;");
+		usingList.Add("using System.Collections.Generic;");
+
+		//type maps
+		var transfTypes = new Dictionary<string, string>();
+		transfTypes.Add("Dictionary`2","Dictionary");
+		transfTypes.Add("List`1","List");
+		transfTypes.Add("Boolean","bool");
+		transfTypes.Add("Byte","byte");
+		transfTypes.Add("SByte","sbyte");
+		transfTypes.Add("Char","char");
+		transfTypes.Add("Decimal","decimal");
+		transfTypes.Add("Double","double");
+		transfTypes.Add("Single","float");
+		transfTypes.Add("Int32","int");
+		transfTypes.Add("UInt32","uint");
+		transfTypes.Add("Int64","long");
+		transfTypes.Add("UInt64","ulong");
+		transfTypes.Add("Int16","short");
+		transfTypes.Add("System.Object[]","object[]");
+		transfTypes.Add("System.Object","object");
+		transfTypes.Add("UInt16","ushort");
+		transfTypes.Add("String","string");
+
+		//only programmer source
+		var sourcePaths = allSourcePaths.Except(ignoreSourcePaths);
+
+		//search interface in sources
+		List<string> selectInterfaceRemotable = new List<string>();
+		foreach(string path in sourcePaths){
+			//ignore own generation class...
+			if(!path.Contains("ProxyFactory.cs")){
+				string readText = File.ReadAllText(path);
+				if(readText.Contains("interface") && readText.Contains("Remotable")){
+					selectInterfaceRemotable.Add(path);
+				}
+			}
+		}
+
+		var originalNamespace = new Dictionary<string, string>();
+		var preProcessed = PreProcessingInterfacesInput(selectInterfaceRemotable, usingList, originalNamespace);
+
+			//state initial
+			int code = 0;
+
+			List<MethodInfo> interfaceMethods = new List<MethodInfo>();
+			
+			string proxyNamespace = null;
+			string interfaceName = null;
+			string constructorName = null;
+			string output = null;
+			string[] headers;
+
+			int keyCount = 0;
+			int countClose = 0;
+			foreach(string line in preProcessed)
+			{
+				output = line.Trim();
+
+				//ending interface read
+				if(output.Contains("}")){
+					countClose++;
+					if(interfaceName != null && countClose == 1){
+						output = GenerateRemainMethods(interfaceMethods, interfaceName, transfTypes, keyCount) + "\n\t\t\t\t}";
+					}
+					code = -1;
+				}else if(countClose == 1){
+					countClose = 0;
+				}
+
+				//ignore annotation process
+				if(output.StartsWith("[") || output.StartsWith("//")){
+					continue;
+				}
+
+				switch(code){
+					// para transformar o cabeçalho da interface em classe publica...
+					case 0:
+						headers = output.Split(null);
+						if(headers.Length > 2){
+							foreach(string header in headers){
+								if(header.Equals("interface")){
+									bool needClose = false;
+									if(headers[2].Contains("{")){
+										headers[2] = headers[2].Replace("{","");
+										needClose = true;
+									}
+
+									interfaceName = headers[2];
+									constructorName = "Proxy_" + interfaceName;
+									
+									//generating interface method list with except method object...
+									proxyList.Add(proxyNamespace+"."+constructorName);
+
+									Type assemblyType = sourceAssembly.GetType(originalNamespace[interfaceName] + "." + interfaceName);
+									if(assemblyType != null){
+										interfaceMethods.AddRange(new HashSet<MethodInfo>(assemblyType.GetMethods().Concat(assemblyType.GetInterfaces().SelectMany(i => i.GetMethods()).ToList()), new MethodComparer()));
+
+										interfaceList.Add(interfaceName);
+
+										output = (needClose) ? "public sealed class " + constructorName + " : " + headers[2] + "\n\t\t\t{" : "public sealed class " + constructorName + " : " + headers[2];
+									
+										//CR+LF ending...
+										output = output.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+
+										//change state
+										code = 1;
+									}
+								}
+							}
+						}else if(headers.Length == 2 && headers[0].Contains("namespace")){
+							proxyNamespace = headers[1];
+						}
+						break;
+
+					//contrutor, variaveis de instancia e o primeiro method
+					case 1:
+						//pula os espaços vazios
+						headers = output.Split(null);
+						if(headers.Length > 1){
+							if(constructorName != null){
+								string copyMethod = output;
+
+								//gera as variaveis de instancia e o construtor da classe gerada
+
+								output = "\tprivate "+interfaceName+" instanceObject;\n"
+								+"\t\t\t\tprivate InvocationHandler instanceHandler;\n\n"
+								+"\t\t\t\tprivate Dictionary<string,MethodInfo> methodCache = new Dictionary<string,MethodInfo>(13);\n"
+								+"\t\t\t\tprivate Dictionary<string,object[]> attributeCache = new Dictionary<string,object[]>(13);\n\n"
+								+"\t\t\tpublic "+ constructorName + "(object instanceObject, InvocationHandler instanceHandler)\n\t\t\t{"
+								+ "\n" + "\t\t\t\tthis.instanceObject = ("+interfaceName+")instanceObject;\n"
+								+ "\t\t\t\tthis.instanceHandler = instanceHandler;\n"
+								+ "\t\t\t}\n\n";
+
+								copyMethod = copyMethod.Replace(";","");
+
+								//captura o nome, return e cria assinatura do method...
+								string nameMethod = null;
+								string returnType = null;
+
+								output = ExtractMethodDataWithConstructor(copyMethod, output, out nameMethod, out returnType);
+
+								//monta os parametros da assinatura do metodo...
+								List<string> parameters = new List<string>();
+								List<string> typeParameters = new List<string>();
+
+								BuildMethodParam(copyMethod, nameMethod, parameters, typeParameters);
+
+								//removendo metodos iguais
+								RemainInterfaceMethods(copyMethod, transfTypes, interfaceMethods, typeParameters);
+
+								//gera conteudo do metodo a partir dos parametros
+								output = GenerateMethodContent(output, parameters, Convert.ToString(keyCount), nameMethod, interfaceName, returnType);
+								
+								keyCount++;
+
+								//CR+LF ending...
+								output = output.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+
+								constructorName = null;
+							}
+							code = 2;
+						}
+						break;
+
+					case 2:
+						headers = output.Split(null);
+						if(headers.Length > 1){
+							string copyMethod = output;
+
+							copyMethod = copyMethod.Replace(";","");
+
+							//captura o nome, return e cria assinatura do method...
+							string nameMethod = null;
+							string returnType = null;
+
+							ExtractMethodData(copyMethod, out output, out nameMethod, out returnType);
+
+							//monta os parametros da assinatura do metodo...
+							List<string> parameters = new List<string>();
+							List<string> typeParameters = new List<string>();
+
+							BuildMethodParam(copyMethod, nameMethod, parameters, typeParameters);
+
+							//removendo metodos iguais
+							RemainInterfaceMethods(copyMethod, transfTypes, interfaceMethods, typeParameters);
+
+							output = GenerateMethodContent(output, parameters, Convert.ToString(keyCount), nameMethod, interfaceName, returnType);
+
+							keyCount++;
+
+							//CR+LF ending...
+							output = output.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+
+							constructorName = null;				
+						}
+						break;
+
+					case -1:
+						interfaceMethods.Clear();
+						code = 0;
+						break;
+				}
+			
+			//salva na lista...
+			outputList.Add(output);
+			
+			}
+		//}
+
+		//tenta deletar as dll que que foram liberadas pelo Visual Studio
+		DirectoryInfo dllDirectory = new DirectoryInfo( Path.Combine(Host.ResolvePath(string.Empty), @"DLL\"));
+		foreach (FileInfo file in dllDirectory.GetFiles())
+		{
+			try{
+				file.Delete();	
+			}catch(Exception e){
+				Console.WriteLine(e.ToString());
+			}
+		}
+
+		foreach(string printOutput in outputList){
+			#>
+<#= printOutput #>
+			<#
+		}
+
+		}catch(Exception ex){
+			string output = "/* [EXCEPTION]";
+			output = output + String.Format( "\nMessage: \n- {0}", ex.Message );
+            output = output + String.Format("\nHelpLink: \n- {0}", ex.HelpLink );
+            output = output + String.Format("\nSource: \n- {0}", ex.Source );
+            output = output + String.Format("\nStackTrace: \n- {0}", ex.StackTrace );
+            output = output + String.Format( "\nTargetSite: \n- {0}", ex.TargetSite );
+			output = output + "\n*/";
+
+			#>
+<#= output #>
+			<#
+		}
+#>
+
+namespace Ufc.MpOS.Proxy
+{
+     public class ProxyFactory : IProxy
+     {
+        public object NewProxyInstance(object instanceObject, Type objInterface, InvocationHandler handler)
+        {
+			
+			<#
+			if(proxyList.Count > 0 && interfaceList.Count > 0){
+				string printCase = "\n";
+			#>
+
+			switch (objInterface.Name)
+            {
+            <#= printCase #> <#
+
+				for(int i=0;i<proxyList.Count && i<interfaceList.Count;i++){
+					printCase = "\t\t\t\tcase \""+ interfaceList[i]+"\":\n" + "\t\t\t\t\treturn new "+proxyList[i]+"(instanceObject,handler);\n";
+
+#> <#= printCase #> <#
+					}#>
+					}
+				<# } #>
+			return null;
+		}
+	 }
+}
+
+<#+
+	//search for reamain methods for processing
+	public void RemainInterfaceMethods(string copyMethod, Dictionary<string, string> transfTypes, List<MethodInfo> interfaceMethods, List<string> typeParameters){
+		MethodInfo candidate = null;
+		foreach(MethodInfo mInfo in interfaceMethods){
+			ParameterInfo[] paramsInfo = mInfo.GetParameters();
+			if(copyMethod.Contains(mInfo.Name) && paramsInfo.Length == typeParameters.Count){		
+				if(paramsInfo.Length == 0){
+					candidate = mInfo;
+					break;
+				}	
+										
+				int assertParam = 0;
+				for(int i=0;i<typeParameters.Count;i++){
+					string paramTypeStr = TransformType(paramsInfo[i].ParameterType.Name, transfTypes);
+
+					if(paramTypeStr != null){
+						if(typeParameters[i].ToLower().StartsWith(paramTypeStr.ToLower())){
+							assertParam++;
+						}
+					}else{
+						if(paramsInfo[i].ParameterType.Name.ToLower().EndsWith(typeParameters[i].ToLower())){
+							assertParam++;
+						}
+					}
+				}					
+										
+				if(assertParam == typeParameters.Count){
+					candidate = mInfo;
+					goto RemoveCandidate;
+				}	
+			}
+		}
+
+		RemoveCandidate:
+		if(candidate != null){
+			interfaceMethods.Remove(candidate);	
+		}	
+	}
+#>
+
+<#+ 
+	public string ExtractMethodDataWithConstructor(string copyMethod, string output, out string nameMethod, out string returnType){
+		string[] nameMethods = copyMethod.Split(null);
+		if(nameMethods[0].Equals("new")){
+			nameMethod = nameMethods[2].Split('(')[0];
+			returnType = nameMethods[1];
+
+			output = output + "\t\t\tpublic " + copyMethod.Remove(0,4) +"\n\t\t\t{\n\t\t\t";
+		}else{
+			nameMethod = nameMethods[1].Split('(')[0];
+			returnType = nameMethods[0];
+
+			output = output + "\t\t\tpublic " + copyMethod +"\n\t\t\t{\n\t\t\t";
+		}
+		return output;
+	}
+#>
+
+<#+
+	public string GenerateMethodContent(string output, List<string> parameters, string paramKey, string nameMethod, string interfaceName, string returnType){
+		if(parameters.Count == 0){
+			output = output + "\tMethodInfo methodInfo = null;\n\t\t\t";
+			output = output + "\tobject[] attributes = null;\n\n\t\t\t";
+
+			output = output + "\tif (!methodCache.TryGetValue(\""+paramKey+"\", out methodInfo)){\n\t\t\t";
+			output = output + "\t\tmethodInfo = instanceObject.GetType().GetMethod(\""+nameMethod+"\", new Type[0]);\n\t\t\t";
+			output = output + "\t\tmethodCache.Add(\""+paramKey+"\",methodInfo);\n\t\t\t";
+			output = output + "\t}\n\n\t\t\t";
+
+			output = output + "\tif (!attributeCache.TryGetValue(\""+paramKey+"\", out attributes)){\n\t\t\t";
+			output = output + "\t\tMethodInfo method = typeof("+interfaceName+").GetMethod(\""+nameMethod+"\", new Type[0]);\n\t\t\t";
+			output = output + "\t\tif (method != null){\n\t\t\t";
+			output = output + "\t\t\tattributes = method.GetCustomAttributes(true);\n\t\t\t";
+			output = output + "\t\t}else{\n\t\t\t";
+			output = output + "\t\t\tattributes = new object[0];\n\t\t\t";
+			output = output + "\t\t}\n\t\t\t";
+			output = output + "\t\tattributeCache.Add(\""+paramKey+"\", attributes);\n\t\t\t";
+			output = output + "\t}\n\n\t\t\t";
+
+
+			if(returnType.Equals("void")){
+				output = output + "\tinstanceHandler.Invoke(instanceObject, methodInfo, attributes, new object[0]);";
+			}else{
+				output = output + "\treturn ("+returnType+")instanceHandler.Invoke(instanceObject, methodInfo, attributes, new object[0]);";
+			}
+		}else{
+			string paramList = "";
+			foreach(string param in parameters){
+				paramList = paramList + param + ", ";
+			}
+			paramList = paramList.Remove(paramList.Length - 2, 2);
+
+			string paramTypeList = "";
+			foreach(string param in parameters){
+				paramTypeList = paramTypeList + param + ".GetType(), ";
+			}
+			paramTypeList = paramTypeList.Remove(paramTypeList.Length - 2, 2);
+
+			output = output + "\tMethodInfo methodInfo = null;\n\t\t\t";
+			output = output + "\tobject[] attributes = null;\n\n\t\t\t";
+
+			output = output + "\tif (!methodCache.TryGetValue(\""+paramKey+"\", out methodInfo)){\n\t\t\t";
+			output = output + "\t\tmethodInfo = instanceObject.GetType().GetMethod(\""+nameMethod+"\", new Type[]{ "+paramTypeList+"});\n\t\t\t";
+			output = output + "\t\tmethodCache.Add(\""+paramKey+"\", methodInfo);\n\t\t\t";
+			output = output + "\t}\n\n\t\t\t";
+
+			output = output + "\tif (!attributeCache.TryGetValue(\""+paramKey+"\", out attributes)){\n\t\t\t";
+			output = output + "\t\tMethodInfo method = typeof("+interfaceName+").GetMethod(\""+nameMethod+"\", new Type[]{ "+paramTypeList+"});\n\t\t\t";
+			output = output + "\t\tif (method != null){\n\t\t\t";
+			output = output + "\t\t\tattributes = method.GetCustomAttributes(true);\n\t\t\t";
+			output = output + "\t\t}else{\n\t\t\t";
+			output = output + "\t\t\tattributes = new object[0];\n\t\t\t";
+			output = output + "\t\t}\n\t\t\t";
+			output = output + "\t\tattributeCache.Add(\""+paramKey+"\", attributes);\n\t\t\t";
+			output = output + "\t}\n\n\t\t\t";
+
+			if(returnType.Equals("void")){
+				output = output + "\tinstanceHandler.Invoke(instanceObject, methodInfo, attributes, new object[] {"+paramList+"});";
+			}else{
+				output = output + "\treturn ("+returnType+")instanceHandler.Invoke(instanceObject, methodInfo, attributes, new object[] {"+paramList+"});";
+			}
+		}
+
+		output = output + "\n\t\t\t}\n";
+
+		return output;
+	}
+#>
+
+<#+ 
+	public void ExtractMethodData(string copyMethod, out string output, out string nameMethod, out string returnType){
+		string[] nameMethods = copyMethod.Split(null);
+		
+		if(nameMethods[0].Equals("new")){
+			nameMethod = nameMethods[2].Split('(')[0];
+			returnType = nameMethods[1];
+
+			output = "public " + copyMethod.Remove(0,4) +"\n\t\t\t{\n\t\t\t";
+		}else{
+			nameMethod = nameMethods[1].Split('(')[0];
+			returnType = nameMethods[0];
+				output = "public " + copyMethod +"\n\t\t\t{\n\t\t\t";
+		}
+	}
+#>
+
+<#+
+	public string GenerateRemainMethods(List<MethodInfo> interfaceMethods, string interfaceName, Dictionary<string, string> transfTypes, int keyCount){
+		string extraMethods = "";
+		string output = "";
+
+		foreach(MethodInfo mi in interfaceMethods){
+			string copyMethod = "";
+			string nameMethod = mi.Name;
+			string returnType = mi.ReturnParameter.ToString();
+			ParameterInfo[] methodParams = mi.GetParameters();
+			
+			if(methodParams.Length == 0){
+				copyMethod =  mi.ToString();
+			}else{
+				string paramCompose = "(";
+				foreach(ParameterInfo param in methodParams){
+					string paramTypeStr = TransformType(param.ParameterType.Name, transfTypes);
+					
+					if(paramTypeStr != null){
+						paramCompose = paramCompose + paramTypeStr + " " + param.Name + ", ";
+					}else{
+						paramCompose = paramCompose + param.ToString() +", ";
+					}
+				}
+				paramCompose = paramCompose.Remove(paramCompose.Length - 2, 2) + ")";
+				
+				if(returnType.Contains("Void")){
+					copyMethod = returnType.ToLower() + nameMethod + paramCompose;
+				}else{
+					copyMethod = TransformType(returnType, transfTypes) + nameMethod + paramCompose;
+				}
+			}
+
+			ExtractMethodData(copyMethod, out output, out nameMethod, out returnType);
+
+			List<string> parameters = new List<string>();
+			List<string> typeParameters = new List<string>();
+
+			BuildMethodParam(copyMethod, nameMethod, parameters, typeParameters);
+
+			//gera conteudo do metodo a partir dos parametros
+			output = GenerateMethodContent(output, parameters,  Convert.ToString(keyCount), nameMethod, interfaceName, returnType);
+								
+			keyCount++;
+
+			//CR+LF ending...
+			output = output.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+
+			extraMethods = extraMethods + output + "\n";
+		}
+
+		return extraMethods;
+	}
+#>
+
+<#+
+	public string TransformType(string typeName, Dictionary<string, string> transfTypes){
+		string paramTypeStr = null;
+		foreach( KeyValuePair<string, string> kvp in transfTypes )
+		{			
+			if(typeName.StartsWith(kvp.Key)){
+				paramTypeStr = typeName.Replace(kvp.Key,kvp.Value);
+				break;
+			}
+		}
+
+		return paramTypeStr;
+	}
+#>
+
+<#+
+		//for debug proporses
+		/*
+		string[] entradas = { 
+									"void X(float c, Dic<string, string> a)",
+									"void X(List<Dic<int, Dic<List<float>, string>>> a, double b)",
+									"void X(List<string> a, double b)",
+									"void X(Dic<List<string>, string> a)",
+									"void X(Dic<string, string> a)",
+									"void X(Dic<string, int, string> a)",
+									"void X(List<string> a)",
+									"void X(Dic<string, string> a, float c)",
+									"void Y(float c, string str)",
+									"void Z()",
+									"void Y(string str)",
+									"void Y(string[] str, int[][] alpha, int e)"};
+		*/
+
+		public string[] ProcessMethods(string method)
+		{
+			string[] splits = method.Split(',');
+
+			if (splits.Length > 1)
+			{
+				List<string> newSplits = new List<string>(5);
+				int openGenerics = 0;
+				string strGenerics = "";
+				foreach (string split in splits)
+				{
+					string search = split.IndexOf(' ') == 0 ? split.TrimStart(' ') : split;
+					if (search.Contains("<"))
+					{
+						openGenerics += search.Count(f => f == '<');
+
+						if (search.Contains(">"))
+						{
+							openGenerics -= search.Count(f => f == '>');
+						}
+
+						if (openGenerics > 0)
+						{
+							strGenerics += search + ",";
+						}
+						else
+						{
+							newSplits.Add(search);
+						}
+					}
+					else if (search.Contains(">"))
+					{
+						openGenerics -= search.Count(f => f == '>');
+						if (openGenerics == 0)
+						{
+							strGenerics += search;
+							newSplits.Add(strGenerics);
+						}
+						else
+						{
+							strGenerics += search + ",";
+						}
+					}
+					else if (openGenerics > 0)
+					{
+						strGenerics += search + ",";
+					}
+					else
+					//else if (newSplits.Count > 0)
+					{
+						newSplits.Add(search);
+					}
+				}
+
+				if (newSplits.Count > 0)
+				{
+					splits = newSplits.ToArray();
+				}
+			}
+
+			return splits;
+		}
+#>
+
+<#+
+	public void BuildMethodParam(string copyMethod, string nameMethod, List<string> parameters, List<string> typeParameters){		
+		if(copyMethod.Contains("new")){
+			copyMethod = copyMethod.Replace("new","");
+		}
+
+		string[] paramMethods = ProcessMethods(copyMethod);
+		if(paramMethods.Length == 1){
+			if(!copyMethod.Contains("()")){
+				string[] selectParam = Regex.Split(copyMethod, @"\s+");
+				if(selectParam.Length == 3){
+					parameters.Add(selectParam[selectParam.Length - 1].Replace(")",""));
+					typeParameters.Add(selectParam[selectParam.Length - 2].Split('(')[1]);
+				}else{
+					//maybe the generic with 2 or more param
+					string[] compressSelect = new string[3];
+
+					int count = 0;
+					string temp = "";
+					foreach(string par in selectParam){
+						if(count != 0 && count != (selectParam.Length - 1)){
+							temp += par+" ";
+						}
+						count++;
+					}
+
+					compressSelect[0] = selectParam[0];
+					compressSelect[1] = temp;
+					compressSelect[2] = selectParam[selectParam.Length - 1];
+
+					selectParam = compressSelect;
+					parameters.Add(selectParam[selectParam.Length - 1].Replace(")",""));
+					typeParameters.Add(selectParam[selectParam.Length - 2].Split('(')[1]);
+				}
+			}
+		}else{
+			foreach(string paramMeth in paramMethods){
+				string[] selectParam = paramMeth.Split(null);
+				if(paramMeth.Contains(")")){
+					parameters.Add(selectParam[selectParam.Length - 1].Replace(")",""));
+					if(paramMeth.Contains("(")){
+						typeParameters.Add(selectParam[selectParam.Length - 2].Split(new char[]{'('})[1]);
+					}else{
+						typeParameters.Add(selectParam[selectParam.Length - 2].Replace("(",""));
+					}	
+				}else{											
+					parameters.Add(selectParam[selectParam.Length - 1]);
+					if(paramMeth.Contains("(")){
+						typeParameters.Add(selectParam[selectParam.Length - 2].Split(new char[]{'('})[1]);
+					}else{
+						typeParameters.Add(selectParam[selectParam.Length - 2].Replace("(",""));
+					}
+				}
+			}
+		}
+	}
+#>
+
+<#+
+	public List<string> PreProcessingInterfacesInput(List<string> selectInterfaceRemotable, List<string> usingList, Dictionary<string, string> originalNamespace){
+		bool nameSpaceCreated = false;
+		bool interfaceCreated = false;
+		int countEntryBracket = 0;
+
+		List<string> outputList = new List<string>();
+		List<string> processedLines = new List<string>();
+		foreach(string path in selectInterfaceRemotable){
+			//get all lines from file...
+			string[] contents = File.ReadAllLines(path);
+			
+			string nameSpaceOriginal = null;
+			string output = null;
+			foreach(string line in contents){
+				output = line.Trim();
+
+				if(output.StartsWith("using")){
+					if(!usingList.Contains(output) && !outputList.Contains(output)){
+						outputList.Add(output);
+					}
+				}else if(output.StartsWith("namespace")){
+					if(!nameSpaceCreated){
+						nameSpaceCreated=true;
+						if(output.Contains("{")){
+							processedLines.Add("namespace Ufc.MpOS.Proxy.Temp{" + "\n");
+							countEntryBracket++;
+						}else{
+							processedLines.Add("namespace Ufc.MpOS.Proxy.Temp" + "\n");
+						}
+					}
+					nameSpaceOriginal = output.Split(null)[1];
+
+				}else if(output.StartsWith("{")){
+					if(nameSpaceCreated && countEntryBracket == 0){
+						countEntryBracket++;
+						processedLines.Add(output + "\n");
+						continue;
+					}
+
+					if(interfaceCreated && countEntryBracket == 1){
+						countEntryBracket++;
+						processedLines.Add(output + "\n");
+					}
+				}else if(output.Contains("interface") && countEntryBracket == 1){
+					interfaceCreated = true;
+					if(output.Contains("{")){
+						countEntryBracket++;
+					}
+					processedLines.Add(output + "\n");
+
+					//processing namespace...
+					string[] processLine = output.Split(null);
+					if(processLine[0].Equals("public")){
+						originalNamespace.Add(processLine[2], nameSpaceOriginal);
+					}else if(processLine[0].Equals("interface")){
+						originalNamespace.Add(processLine[1], nameSpaceOriginal);
+					}
+
+					if(!outputList.Contains("using " + nameSpaceOriginal + ";")){
+						outputList.Add("using " + nameSpaceOriginal + ";");
+					}
+
+				}else if(output.StartsWith("}")){
+					if(countEntryBracket == 2){
+						countEntryBracket--;
+						processedLines.Add(output + "\n");
+						interfaceCreated = false;
+					}else{
+						continue;
+					}
+				}else{
+					processedLines.Add(output + "\n");
+				}
+			}
+		}
+
+		outputList.Sort();
+
+		//fechar o namespace criado...
+		processedLines.Add("}\n");
+
+		//add processedList into usingList
+		outputList.AddRange(processedLines);
+
+		return outputList;
+	}
+#>
+
+<#+
+
+	class MethodComparer : EqualityComparer<MethodInfo>
+	{
+		public override bool Equals(MethodInfo m1, MethodInfo m2)
+		{
+			return m1.ToString().Equals(m2.ToString(), StringComparison.CurrentCultureIgnoreCase);
+		}
+		public override int GetHashCode(MethodInfo m)
+		{
+			return m.ToString().GetHashCode();
+		}
+	}
+
+#>
