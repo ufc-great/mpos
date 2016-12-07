@@ -1,0 +1,48 @@
+<resources>
+    <string name="title_activity_settings">Configurações</string>
+    
+    <string name="pref_ball_quantity_key">ball_quantity</string>
+    <string name="pref_ball_quantity_title">Quantidade</string>
+    <string name="pref_ball_quantity_summary">250 Bolas</string>
+    <string name="pref_ball_quantity_default_value">250:6.0</string>
+    <string-array name="pref_ball_quantity_string">
+        <item>250 Bolas</item>
+        <item>500 Bolas</item>
+        <item>750 Bolas</item>
+        <item>1000 Bolas</item>
+        <item>1500 Bolas</item>
+    </string-array>
+    <string-array name="pref_ball_quantity_values">
+        <item>250:6.0</item>
+        <item>500:5.0</item>
+        <item>750:3.5</item>
+        <item>1000:3.5</item>
+        <item>1500:3.0</item>
+    </string-array>
+    
+    <string name="pref_start_place_key">start_place</string>
+    <string name="pref_start_place_title">Lugar Inicial</string>
+    <string name="pref_start_place_on">Fixo</string>
+    <string name="pref_start_place_off">Aleatório</string>
+    
+    <string name="pref_mpos_key">mpos_execution</string>
+    <string name="pref_mpos_title">Forma de Execução (MpOS)</string>
+    <string name="pref_mpos_summary">Local</string>
+    <string name="pref_mpos_default_value">local</string>
+    <string-array name="pref_mpos_execution_string">
+        <item>Local</item>
+        <item>Static Offload</item>
+        <item>Dynamic Offload</item>
+    </string-array>
+    <string-array name="pref_mpos_execution_values">
+        <item>local</item>
+        <item>static</item>
+        <item>dynamic</item>
+    </string-array>
+    
+    <string name="pref_mpos_serial_key">mpos_serial</string>
+    <string name="pref_mpos_serial_title">Forma de Serialização (MpOS)</string>
+    <string name="pref_mpos_serial_on">Nativa (Java built-in)</string>
+    <string name="pref_mpos_serial_off">Desempenho (Rpc Serial)</string>
+    
+</resources>
